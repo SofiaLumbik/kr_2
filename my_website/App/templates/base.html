@@ -1,0 +1,71 @@
+{% load static %}
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BAGS</title>
+    {% load static %}
+    <link href="{% static 'styles.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light" style="background-color: #f8d9e1">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'App:main' %}">
+            <img src="{% static 'logo_app.png' %}" alt="Logo" width="30" height="30">
+        </a>
+
+        <a class="nav-link" href="https://t.me/aroundtheworldgo" style="padding: 0 10px;">
+            <img src="{% static 'small-image_1.png' %}" alt="Маленькая картинка" style="width: 30px; height: 30px;">
+        </a>
+
+        <a class="nav-link" href="https://aw-go.ru/?ysclid=m7dalukhi4958300894" style="padding: 0 10px; color: #4b0082; font-size: 16px;">
+            ВК
+        </a>
+
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Переключить навигацию">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link {% if '/main/' in request.path %}active{% endif %}" href="{% url 'App:main' %}">Главная</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/catalog/' in request.path %}active{% endif %}" href="{% url 'App:catalog' %}">Каталог</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if '/contacts/' in request.path %}active{% endif %}" href="{% url 'App:contacts' %}" id="contactsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Контакты
+                    </a>
+                    <ul class="dropdown-menu" aria-labelledby="contactsDropdown">
+                        <li><a class="dropdown-item" href="{% url 'App:contacts' %}#contact_info">Контактная информация</a></li>
+                        <li><a class="dropdown-item" href="{% url 'App:contacts' %}#payment">Оплата</a></li>
+                        <li><a class="dropdown-item" href="{% url 'App:contacts' %}#order-form">Оформление заказа</a></li>
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link {% if '/program/' in request.path %}active{% endif %}" href="{% url 'App:program' %}">Образовательная программа</a>
+                </li>
+
+
+
+
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="container mt-5 pt-4">
+    {% block content %}{% endblock %}
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

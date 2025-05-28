@@ -1,0 +1,369 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="education-container">
+
+    <h1 class="education-title">Я и моя образовательная программа</h1>
+
+    <!-- Форма поиска -->
+    <div class="search-section">
+        <form method="get" class="search-form">
+            <div class="search-fields">
+                {{ form.as_p }}
+                <p>
+                    <label for="has_phone">Наличие телефона:</label>
+                    <select name="has_phone" id="has_phone">
+                        <option value="">-- Не выбрано --</option>
+                        <option value="yes">Есть номер</option>
+                        <option value="no">Нет номера</option>
+                    </select>
+                </p>
+            </div>
+            <button type="submit" class="search-button">Найти</button>
+        </form>
+    </div>
+
+    <!-- Результаты поиска -->
+    {% if search_results %}
+    <div class="search-results">
+        <h2 class="section-title">Результаты поиска:</h2>
+
+        {% if search_results.supervisor %}
+        <div class="person-card highlighted">
+            <div class="person-photo">
+                <img src="{{ search_results.supervisor.supervisor_photo.url }}" alt="Фото {{ search_results.supervisor.supervisor_name }}">
+            </div>
+            <div class="person-info">
+                <h3>Руководитель</h3>
+                <p class="person-name">{{ search_results.supervisor.supervisor_name }} {{ search_results.supervisor.supervisor_surname }}</p>
+                <p class="person-contact">Email: {{ search_results.supervisor.supervisor_email }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if search_results.manager %}
+        <div class="person-card highlighted">
+            <div class="person-photo">
+                <img src="{{ search_results.manager.manager_photo.url }}" alt="Фото {{ search_results.manager.manager_name }}">
+            </div>
+            <div class="person-info">
+                <h3>Менеджер</h3>
+                <p class="person-name">{{ search_results.manager.manager_name }} {{ search_results.manager.manager_surname }}</p>
+                <p class="person-contact">Email: {{ search_results.manager.manager_email }}</p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if search_results.classmates %}
+        <h3 class="subsection-title">Сокурсники:</h3>
+        <div class="people-grid">
+            {% for classmate in search_results.classmates %}
+            <div class="person-card">
+                <div class="person-photo">
+                    <img src="{{ classmate.photo.url }}" alt="Фото {{ classmate.name }}">
+                </div>
+                <div class="person-info">
+                    <p class="person-name">{{ classmate.name }} {{ classmate.surname }}</p>
+                    <p class="person-contact">Email: {{ classmate.email }}</p>
+                    <p class="person-contact">Телефон: {{ classmate.phone }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+
+
+        {% if search_results.not_found %}
+        <p class="not-found-message">Информация не найдена</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Основная информация -->
+    <div class="profile-section">
+        <h2 class="section-title">Мой профиль</h2>
+        <div class="profile-card">
+            <div class="profile-photo">
+                <img src="{{ program.my_photo.url }}" alt="Фото {{ program.my_name }}">
+            </div>
+            <div class="profile-details">
+                <h3 class="profile-name">{{ program.my_name }}</h3>
+                <p class="profile-contact">Телефон: {{ program.my_phone }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Описание программы -->
+    <div class="program-section">
+        <h2 class="section-title">{{ program.program_name }}</h2>
+        <div class="program-description">
+            {{ program.program_description|linebreaks }}
+        </div>
+    </div>
+
+    <!-- Руководитель и менеджер -->
+    <div class="staff-section">
+        <h2 class="section-title">Научный руководитель и менеджер</h2>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <div class="staff-photo">
+                    <img src="{{ program.supervisor_photo.url }}" alt="Фото {{ program.supervisor_name }}">
+                </div>
+                <div class="staff-info">
+                    <h3>Руководитель</h3>
+                    <p class="staff-name">{{ program.supervisor_name }}</p>
+                    <p class="staff-contact">Email: {{ program.supervisor_email }}</p>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="staff-photo">
+                    <img src="{{ program.manager_photo.url }}" alt="Фото {{ program.manager_name }}">
+                </div>
+                <div class="staff-info">
+                    <h3>Менеджер</h3>
+                    <p class="staff-name">{{ program.manager_name }}</p>
+                    <p class="staff-contact">Email: {{ program.manager_email }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Сокурсники -->
+    <div class="classmates-section">
+        <h2 class="section-title">Мои сокурсники</h2>
+        <div class="classmates-grid">
+            {% for classmate in classmates %}
+            <div class="classmate-card">
+                <div class="classmate-photo">
+                    <img src="{{ classmate.photo.url }}" alt="Фото {{ classmate.name }}">
+                </div>
+                <div class="classmate-info">
+                    <p class="classmate-name">{{ classmate.name }}</p>
+                    <p class="classmate-contact">Email: {{ classmate.email }}</p>
+                    <p class="classmate-contact">Телефон: {{ classmate.phone }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</div>
+
+<style>
+.education-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px;
+    font-family: 'Arial', sans-serif;
+    color: #333;
+}
+
+.education-title {
+    text-align: center;
+    color: #4b0082;
+    margin-bottom: 40px;
+    font-size: 2.2em;
+}
+
+.section-title {
+    color: #6a45b0;
+    margin: 30px 0 20px;
+    font-size: 1.8em;
+    border-bottom: 2px solid #e9d8fd;
+    padding-bottom: 10px;
+}
+
+.subsection-title {
+    color: #7e57c2;
+    margin: 25px 0 15px;
+    font-size: 1.4em;
+}
+
+/* Стили для формы поиска */
+.search-section {
+    background-color: #f5f0ff;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    box-shadow: 0 2px 10px rgba(126, 87, 194, 0.1);
+}
+
+.search-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: flex-end;
+}
+
+.search-fields {
+    flex: 1;
+    min-width: 250px;
+}
+
+.search-fields p {
+    margin-bottom: 10px;
+}
+
+.search-fields label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: #4b0082;
+}
+
+.search-fields input,
+.search-fields select {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d0b4f5;
+    border-radius: 5px;
+    background-color: white;
+}
+
+.search-button {
+    background-color: #7e57c2;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.search-button:hover {
+    background-color: #6a45b0;
+}
+
+/* Стили карточек */
+.profile-card,
+.person-card,
+.staff-card,
+.classmate-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 3px 10px rgba(126, 87, 194, 0.1);
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.highlighted {
+    border-left: 4px solid #7e57c2;
+    background-color: #f9f5ff;
+}
+
+.person-photo,
+.profile-photo,
+.staff-photo,
+.classmate-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    border: 3px solid #e9d8fd;
+}
+
+.person-photo img,
+.profile-photo img,
+.staff-photo img,
+.classmate-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.person-info,
+.profile-details,
+.staff-info,
+.classmate-info {
+    flex: 1;
+}
+
+.person-name,
+.profile-name,
+.staff-name,
+.classmate-name {
+    font-weight: bold;
+    color: #4b0082;
+    margin-bottom: 5px;
+    font-size: 1.1em;
+}
+
+.person-contact,
+.profile-contact,
+.staff-contact,
+.classmate-contact {
+    color: #666;
+    margin: 3px 0;
+    font-size: 0.9em;
+}
+
+/* Сетки */
+.people-grid,
+.staff-grid,
+.classmates-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+/* Описание программы */
+.program-description {
+    background-color: white;
+    padding: 25px;
+    border-radius: 10px;
+    line-height: 1.6;
+    box-shadow: 0 3px 10px rgba(126, 87, 194, 0.1);
+}
+
+.not-found-message {
+    text-align: center;
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .education-container {
+        padding: 15px;
+    }
+
+    .education-title {
+        font-size: 1.8em;
+    }
+
+    .section-title {
+        font-size: 1.5em;
+    }
+
+    .profile-card,
+    .person-card,
+    .staff-card,
+    .classmate-card {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .people-grid,
+    .staff-grid,
+    .classmates-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .search-form {
+        flex-direction: column;
+    }
+
+    .search-button {
+        width: 100%;
+    }
+}
+</style>
+{% endblock %}

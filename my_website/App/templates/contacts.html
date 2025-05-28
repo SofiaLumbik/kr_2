@@ -1,0 +1,323 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<div style="
+    background-color: #F5EAFE;
+    border-radius: 15px;
+    padding: 40px;
+    margin: 40px auto;
+    max-width: 1200px;
+    box-shadow: 0 10px 30px rgba(126, 87, 194, 0.1);
+    position: relative;
+    overflow: hidden;
+">
+
+    <!-- Заголовок -->
+    <h2 id="contact_info" style="
+        color: #4b0082;
+        font-size: 36px;
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+    ">
+        Контактная информация
+    </h2>
+
+    <div style="display: flex; align-items: center; gap: 30px;">
+        <div style="flex: 1;">
+            <div style="display: flex; gap: 30px;">
+                <div style="flex: 1;">
+                    <p style="font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+                        <strong style="color: #4b0082;">Адрес:</strong><br>
+                        {{ contact.address }}
+                    </p>
+                    <p style="font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+                        <strong style="color: #4b0082;">Телефон:</strong><br>
+                        {{ contact.phone }}
+                    </p>
+                </div>
+                <div style="flex: 1;">
+                    <p style="font-size: 18px; line-height: 1.6; margin-bottom: 15px;">
+                        <strong style="color: #4b0082;">Email:</strong><br>
+                        {{ contact.email }}
+                    </p>
+                    <p style="font-size: 18px; line-height: 1.6;">
+                        <strong style="color: #4b0082;">Режим работы:</strong><br>
+                        {{ contact.working_hours }}
+                    </p>
+                </div>
+            </div>
+        </div>
+        {% if contact.contact_image %}
+        <div style="width: 40%;">
+            <img src="{{ contact.contact_image.url }}" alt="Контакты" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="payment" style="
+    max-width: 1200px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #F5EAFE;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+">
+    <h2 style="color: #4b0082; font-size: 32px; margin-bottom: 30px; text-align: center;">
+        Информация по оплате
+    </h2>
+
+    <div style="display: flex; align-items: center; gap: 30px;">
+        <div style="flex: 1;">
+            <div style="font-size: 18px; line-height: 1.6;">
+                {{ contact.payment_info|linebreaks }}
+            </div>
+        </div>
+        {% if contact.payment_image %}
+        <div style="width: 40%;">
+            <img src="{{ contact.payment_image.url }}" alt="Способы оплаты" style="width: 100%; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1);">
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div id="order-section" class="p-4 rounded shadow-sm" style="background-color: #F5EAFE; border: 1px solid #7e57c2;">
+    <h2 class="text-center mb-4" style="color: #4b0082;">Форма заказа</h2>
+
+    {% if messages %}
+    <div class="alert alert-success alert-dismissible fade show">
+        {% for message in messages %}
+            {{ message }}
+        {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <form method="post" id="order-form" novalidate action="{% url 'App:contacts' %}" autocomplete="off">
+        {% csrf_token %}
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Фамилия*</label>
+                <input type="text" name="last_name" class="form-control" required
+                       pattern="[А-ЯЁ][А-Яа-яЁё\s\-]*">
+                <div class="invalid-feedback">Введите корректную фамилию</div>
+            </div>
+
+            <div class="col-md-6">
+                <label class="form-label">Имя*</label>
+                <input type="text" name="first_name" class="form-control" required
+                       pattern="[А-ЯЁ][А-Яа-яЁё\s\-]*">
+                <div class="invalid-feedback">Введите корректное имя</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Email*</label>
+                <input type="email" name="email" class="form-control" required>
+                <div class="invalid-feedback">Введите корректный email</div>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label">Товар*</label>
+                <select name="product" class="form-select" required>
+                    <option value="" selected disabled>Выберите товар</option>
+                    {% for product in products %}
+                    <option value="{{ product.id }}" data-price="{{ product.price }}">
+                        {{ product.name }} - {{ product.price }}₽
+                    </option>
+                    {% endfor %}
+                </select>
+                <div class="invalid-feedback">Выберите товар</div>
+            </div>
+
+            <div class="col-12 text-center mt-4">
+                <button type="submit" class="btn btn-lg text-white" style="background-color: #7e57c2;">
+                    Оформить заказ
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<!-- Обёртка для динамического обновления -->
+<div id="orders-container" class="mt-5 p-4 rounded shadow-sm" style="background-color: #F5EAFE; border: 1px solid #7e57c2;">
+    <h2 class="text-center mb-4" style="color: #4b0082;">История заказов</h2>
+
+    <!-- Фильтры и сортировка -->
+    <div class="mb-4">
+        <form method="get" action="{% url 'App:contacts' %}#order-section" id="filter-form" class="row g-3">
+            <!-- Фильтр по фамилии -->
+            <div class="col-md-3">
+                <input type="text" name="last_name_filter" class="form-control"
+                       placeholder="Поиск по фамилии" value="{{ request.GET.last_name_filter }}">
+            </div>
+
+            <!-- Фильтр по дате -->
+            <div class="col-md-3">
+                <select name="date_filter" class="form-select">
+                    <option value="">Все даты</option>
+                    <option value="today" {% if request.GET.date_filter == 'today' %}selected{% endif %}>Сегодня</option>
+                    <option value="week" {% if request.GET.date_filter == 'week' %}selected{% endif %}>За неделю</option>
+                    <option value="month" {% if request.GET.date_filter == 'month' %}selected{% endif %}>За месяц</option>
+                </select>
+            </div>
+
+            <!-- Сортировка -->
+            <div class="col-md-3">
+                <select name="sort" class="form-select">
+                    <option value="-created_at" {% if request.GET.sort == '-created_at' %}selected{% endif %}>Сначала новые</option>
+                    <option value="created_at" {% if request.GET.sort == 'created_at' %}selected{% endif %}>Сначала старые</option>
+                    <option value="last_name" {% if request.GET.sort == 'last_name' %}selected{% endif %}>Фамилия (А-Я)</option>
+                    <option value="-last_name" {% if request.GET.sort == '-last_name' %}selected{% endif %}>Фамилия (Я-А)</option>
+                </select>
+            </div>
+
+            <!-- Фильтр по цене -->
+            <div class="filter-group">
+                <label class="filter-label">Фильтр по цене:</label>
+                <select name="price_filter" class="filter-select" onchange="this.form.submit()">
+                    <option value="" {% if not request.GET.price_filter %}selected{% endif %}>Все заказы</option>
+                    <option value="most_expensive" {% if request.GET.price_filter == 'most_expensive' %}selected{% endif %}>Сначала дорогие</option>
+                    <option value="cheapest" {% if request.GET.price_filter == 'cheapest' %}selected{% endif %}>Сначала дешёвые</option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <button type="submit" class="btn text-white w-100" style="background-color: #7e57c2;">
+                    Применить
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Статистика -->
+    <div id="orders-stats" class="alert alert-info mb-4" style="background-color: #e9d8fd; border-color: #d0b4f5; color: #4b0082;">
+        <div class="row">
+            <div class="col-md-4">
+                <strong>Всего заказов:</strong> {{ total_orders }}
+            </div>
+            <div class="col-md-4">
+                <strong>Общая сумма:</strong> {{ total_revenue }}₽
+            </div>
+            <div class="col-md-4">
+                <strong>Популярные товары:</strong>
+                {% for product in popular_products %}
+                    {{ product.name }}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Таблица заказов -->
+    <div style="overflow-x:auto;">
+        <table class="table table-hover text-center align-middle" style="min-width: 720px;">
+            <thead class="table-light">
+                <tr>
+                    <th>Фамилия</th>
+                    <th>Имя</th>
+                    <th>Товар</th>
+                    <th>Цена, ₽</th>
+                    <th>Email</th>
+                    <th>Дата создания</th>
+                </tr>
+            </thead>
+            <tbody id="orders-tbody">
+                {% for order in orders %}
+                <tr>
+                    <td>{{ order.last_name }}</td>
+                    <td>{{ order.first_name }}</td>
+                    <td>{{ order.product.name }}</td>
+                    <td>{{ order.product.price }}</td>
+                    <td>{{ order.email }}</td>
+                    <td>{{ order.created_at|date:"d.m.Y H:i" }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-muted">Заказы не найдены</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- JS для валидации формы и AJAX фильтрации/сортировки -->
+<script>
+    (function() {
+        'use strict';
+
+        // Bootstrap валидация формы заказа
+        const form = document.getElementById('order-form');
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+
+        // Функция для обновления таблицы заказов по AJAX
+        async function fetchOrders(params) {
+            // Формируем URL с параметрами
+            const url = new URL(window.location.href);
+            Object.keys(params).forEach(key => {
+                if (params[key]) {
+                    url.searchParams.set(key, params[key]);
+                } else {
+                    url.searchParams.delete(key);
+                }
+            });
+
+            // Добавляем заголовок, чтобы сервер понял AJAX-запрос
+            const response = await fetch(url, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!response.ok) {
+                console.error('Ошибка загрузки заказов:', response.statusText);
+                return;
+            }
+
+            const html = await response.text();
+
+            // Парсим HTML и вставляем внутрь контейнера
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+
+            // Предполагаем, что сервер отдаёт HTML с элементами #orders-container
+            const newOrdersContainer = doc.getElementById('orders-container');
+            if (newOrdersContainer) {
+                document.getElementById('orders-container').innerHTML = newOrdersContainer.innerHTML;
+            } else {
+                console.warn('Не найден контейнер #orders-container в ответе сервера');
+            }
+        }
+
+        // Обработка формы фильтрации/сортировки
+        const filterForm = document.getElementById('filter-form');
+        filterForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Собираем параметры из формы
+            const formData = new FormData(filterForm);
+            const params = {};
+            formData.forEach((value, key) => {
+                params[key] = value;
+            });
+
+            fetchOrders(params);
+        });
+
+        // (Опционально) можно добавить обработчики onchange на поля фильтра для автообновления
+        // Пример:
+        // document.querySelectorAll('#filter-form select, #filter-form input').forEach(el => {
+        //     el.addEventListener('change', () => filterForm.dispatchEvent(new Event('submit')));
+        // });
+
+    })();
+</script>
+
+{% endblock content %}

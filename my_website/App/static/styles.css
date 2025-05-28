@@ -1,0 +1,86 @@
+/* ====== НАВИГАЦИЯ ====== */
+.navbar {
+    background-color: #e6e6fa !important;
+    padding: 20px 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    transition: transform 0.3s ease-in-out;
+}
+
+.navbar-brand img:hover {
+    transform: scale(1.1);
+}
+
+.navbar-nav .nav-link {
+    color: #4b0082 !important;
+    font-size: 18px;
+    margin: 0 15px;
+    padding: 10px 15px;
+    transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #d8bfd8;
+    border-radius: 5px;
+}
+
+.navbar .nav-link.active {
+    font-weight: bold;
+    color: #ff6600 !important;
+    border-bottom: 2px solid #ff6600;
+}
+
+
+.dropdown-menu {
+    background-color: #e6e6fa;
+    border: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.dropdown-item {
+    color: #4b0082 !important;
+    font-size: 16px;
+    padding: 10px 20px;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.dropdown-item:hover {
+    background-color: #d8bfd8;
+}
+
+
+
+/*ФОРМА*/
+.form-control, .form-select {
+    border: 1px solid #7e57c2;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #7e57c2;
+    box-shadow: 0 0 0 0.25rem rgba(126, 87, 194, 0.25);
+}
+
+.btn-primary {
+    background-color: #7e57c2;
+    border-color: #7e57c2;
+}
+
+.btn-primary:hover {
+    background-color: #5e35b1;
+    border-color: #5e35b1;
+}
+
+.invalid-feedback {
+    display: none;
+    color: #dc3545;
+}
+
+.was-validated .form-control:invalid ~ .invalid-feedback,
+.was-validated .form-select:invalid ~ .invalid-feedback {
+    display: block;
+}
